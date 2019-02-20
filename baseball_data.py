@@ -224,23 +224,24 @@ def aggregate_by_player_id(statistics, playerid, fields):
       input will be aggregated in the aggregated stats dictionaries.
     """
     aggregated_stats_dict = {}
-
     for row in statistics:
-        statsdict = {playerid : row[playerid]}
-        for field in fields:
-            statsdict.update({field: row[field]})
-            aggregated_stats_dict[row[playerid]] = statsdict
-            #print(statsdict)
-            value = aggregated_stats_dict[row[playerid]][field]
-            addvalue = row[field]
-            aggregated_stats_dict[row[playerid]][field] = (int(addvalue) + int(value))
-
+        if row[playerid] not in aggregated_stats_dict:
+            aggregated_stats_dict.update({row[playerid]:{playerid: row[playerid]}})
+            for field in fields:
+                value = {field: int(row[field])}
+                aggregated_stats_dict[row[playerid]].update(value)
+        else:
+            for field in fields:
+                value = aggregated_stats_dict[row[playerid]][field]
+                add = int(row[field])
+                aggregated_stats_dict[row[playerid]][field] = value + add
 
     return aggregated_stats_dict
+
 print(aggregate_by_player_id([{'player': '1', 'stat1': '3', 'stat2': '4', 'stat3': '5'},
-{'player': '1', 'stat1': '2', 'stat2': '1', 'stat3': '8'},
-{'player': '1', 'stat1': '5', 'stat2': '7', 'stat3': '4'}],
-'player', ['stat1', 'stat2']))
+{'player': '2', 'stat1': '1', 'stat2': '2', 'stat3': '3'},
+{'player': '3', 'stat1': '4', 'stat2': '1', 'stat3': '6'}],
+'player', ['stat1', 'stat3']))
 
 def compute_top_stats_career(info, formula, numplayers):
     """
