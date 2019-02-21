@@ -238,11 +238,6 @@ def aggregate_by_player_id(statistics, playerid, fields):
 
     return aggregated_stats_dict
 
-print(aggregate_by_player_id([{'player': '1', 'stat1': '3', 'stat2': '4', 'stat3': '5'},
-{'player': '2', 'stat1': '1', 'stat2': '2', 'stat3': '3'},
-{'player': '3', 'stat1': '4', 'stat2': '1', 'stat3': '6'}],
-'player', ['stat1', 'stat3']))
-
 def compute_top_stats_career(info, formula, numplayers):
     """
     Inputs:
@@ -252,7 +247,23 @@ def compute_top_stats_career(info, formula, numplayers):
                     computes a compound statistic
       numplayers  - Number of top players to return
     """
-    return []
+    statistics = read_csv_as_list_dict(info["battingfile"],
+                info["separator"], info["quote"])
+
+    stats_by_player = aggregate_by_player_id(statistics, info["playerid"],
+                    info["battingfields"])
+
+    filtered_stats = []
+    for stats in stats_by_player.values():
+        filtered_stats.append(stats)
+    #dict of dicts to list of dicts
+
+    top_ids_stats = top_player_ids(info, filtered_stats, formula, numplayers)
+
+    top_players_list = lookup_player_names(info, top_ids_stats)
+
+    return top_players_list
+
 
 
 ##
